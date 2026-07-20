@@ -18,6 +18,7 @@ const spotifyRouter = require("./src/routes/spotify");
 const pinterestRouter = require("./src/routes/pinterest");
 const toolsRouter = require("./src/routes/tools");
 const cdnRouter = require("./src/routes/cdn");
+const ghibliRouter = require("./src/routes/ghibli");
 
 const app = express();
 app.disable("x-powered-by");
@@ -47,6 +48,7 @@ app.use(spotifyRouter);
 app.use(pinterestRouter);
 app.use(toolsRouter);
 app.use(cdnRouter);
+app.use(ghibliRouter);
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // SOCKET.IO
