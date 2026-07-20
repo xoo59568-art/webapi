@@ -1,0 +1,59 @@
+const express = require("express");
+const router = express.Router();
+const { noCache } = require("../utils/http");
+
+router.get("/", (req, res) => {
+  noCache(res);
+  res.sendFile(__dirname + "/../../index.html");
+});
+
+router.get("/ads.txt", (req, res) => {
+  res.type("text/plain");
+  res.send(
+    "google.com, pub-1090659711705372, DIRECT, f08c47fec0942fa0"
+  );
+});
+
+router.get("/robots.txt", (req, res) => {
+  res.type("text/plain");
+  res.send(`
+User-agent: *
+Allow: /
+
+Sitemap: https://rabbitapi.zone.id/sitemap.xml
+`);
+});
+
+router.get("/sitemap.xml", (req, res) => {
+  res.type("application/xml");
+
+  res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+<loc>https://rabbitapi.zone.id/</loc>
+<priority>1.0</priority>
+</url>
+</urlset>`);
+});
+
+router.get("/upload", (req, res) => {
+  noCache(res);
+  res.sendFile(__dirname + "/../../upload.html");
+});
+
+router.get("/category/downloader", (req, res) => {
+  noCache(res);
+  res.sendFile(__dirname + "/../../category/downloader.html");
+});
+
+router.get("/removebg", (req, res) => {
+  noCache(res);
+  res.sendFile(__dirname + "/../../removebg.html");
+});
+
+router.get("/api.html", (req, res) => {
+  noCache(res);
+  res.sendFile(__dirname + "/../../api.html");
+});
+
+module.exports = router;
