@@ -12,6 +12,50 @@ const upload = multer({
   limits: { fileSize: 50 * 1024 * 1024 }
 });
 
+const { identifySong } = require("../utils/audd");
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🎵 SONG IDENTIFY
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+router.get("/api/tools/identify", async (req, res) => {
+  noCache(res);
+  try {
+    const { url } = req.query;
+    if (!url) return res.status(400).json({
+      status: false, creator: CREATOR, message: "Media URL required"
+    });
+
+    const result = await identifySong(url);
+
+    res.json({ status: "success", creator: CREATOR, result });
+  } catch (err) {
+    res.status(500).json({
+      status: false, creator: CREATOR, message: err.message || "Failed to identify song."
+    });
+  }
+});
+
+router.post("/api/tools/identify", upload.single("file"), async (req, res) => {
+  noCache(res);
+  try {
+    if (!req.file) return res.status(400).json({
+      status: false, creator: CREATOR, message: "Audio/video file required"
+    });
+
+    const result = await identifySong(req.file.buffer, req.file.mimetype || "audio/mpeg");
+
+    res.json({ status: "success", creator: CREATOR, result });
+  } catch (err) {
+    res.status(500).json({
+      status: false, creator: CREATOR, message: err.message || "Failed to identify song."
+    });
+  } finally {
+    if (req.file) req.file.buffer = null;
+  }
+});
+
+
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 🌐 WEB SCREENSHOT
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
