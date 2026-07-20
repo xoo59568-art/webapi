@@ -5,6 +5,7 @@ const multer = require("multer");
 const { CREATOR } = require("../config");
 const { noCache, ax, ssAgent, safeDestroy } = require("../utils/http");
 const { cacheBufferMedia } = require("../utils/cache");
+const { removeBgViaMagicStudio } = require("../utils/magicstudioRemoveBg");
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -71,21 +72,7 @@ router.get("/api/removebg", async (req, res) => {
       status: false, creator: CREATOR, message: "Image URL required"
     });
 
-    const response = await ax.get(
-      `https://api.danzy.web.id/api/maker/removebg?url=${encodeURIComponent(url)}`,
-      { timeout: 60000, responseType: "arraybuffer" }
-    );
-
-    const contentType = response.headers["content-type"] || "image/png";
-    if (!contentType.startsWith("image")) {
-      return res.status(502).json({
-        status: false,
-        creator: CREATOR,
-        message: "Failed to remove background"
-      });
-    }
-
-    const buffer = Buffer.from(response.data);
+    const { buffer, contentType } = await removeBgViaMagicStudio(url);
     const proxy = cacheBufferMedia(req, buffer, contentType, ".png");
 
     res.json({
@@ -111,32 +98,10 @@ router.post("/api/removebg", upload.single("image"), async (req, res) => {
       status: false, creator: CREATOR, message: "Image file required"
     });
 
-    // Host the uploaded file temporarily on our own domain so the
-    // upstream removal API (which only accepts a URL) can fetch it
-    const ext = "." + (req.file.originalname?.split(".").pop() || "jpg").toLowerCase();
-    const tempUrl = cacheBufferMedia(
-      req,
+    const { buffer, contentType } = await removeBgViaMagicStudio(
       req.file.buffer,
-      req.file.mimetype || "image/jpeg",
-      ext,
-      5 * 60 * 1000 // short-lived — only needs to survive the upstream fetch
+      req.file.mimetype || "image/jpeg"
     );
-
-    const response = await ax.get(
-      `https://api.danzy.web.id/api/maker/removebg?url=${encodeURIComponent(tempUrl)}`,
-      { timeout: 60000, responseType: "arraybuffer" }
-    );
-
-    const contentType = response.headers["content-type"] || "image/png";
-    if (!contentType.startsWith("image")) {
-      return res.status(502).json({
-        status: false,
-        creator: CREATOR,
-        message: "Failed to remove background"
-      });
-    }
-
-    const buffer = Buffer.from(response.data);
     const proxy = cacheBufferMedia(req, buffer, contentType, ".png");
 
     res.json({
