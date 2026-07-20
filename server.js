@@ -1,0 +1,83 @@
+const express = require("express");
+const http = require("http");
+const { Server } = require("socket.io");
+
+const { PORT } = require("./src/config");
+const { warmConnections } = require("./src/utils/http");
+const { attachSocketHandlers } = require("./src/socket");
+
+// Routers
+const pagesRouter = require("./src/routes/pages");
+const channelRouter = require("./src/routes/channel");
+const pairRouter = require("./src/routes/pair");
+const downloadRouter = require("./src/routes/download");
+const socialRouter = require("./src/routes/social");
+const songRouter = require("./src/routes/song");
+const searchRouter = require("./src/routes/search");
+const spotifyRouter = require("./src/routes/spotify");
+const pinterestRouter = require("./src/routes/pinterest");
+const toolsRouter = require("./src/routes/tools");
+const cdnRouter = require("./src/routes/cdn");
+
+const app = express();
+app.disable("x-powered-by");
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: { origin: "*" },
+  pingTimeout: 20000,
+  pingInterval: 15000
+});
+
+global.botSockets = new Map();
+
+app.set("trust proxy", true);
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// MOUNT ROUTES
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+app.use(pagesRouter);
+app.use(channelRouter);
+app.use(pairRouter);
+app.use(downloadRouter);
+app.use(socialRouter);
+app.use(songRouter);
+app.use(searchRouter);
+app.use(spotifyRouter);
+app.use(pinterestRouter);
+app.use(toolsRouter);
+app.use(cdnRouter);
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// SOCKET.IO
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+attachSocketHandlers(io);
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// AUTO MEMORY CLEANUP — 30s
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+setInterval(() => {
+  // Dead socket cleanup
+  for (const [id, bot] of global.botSockets.entries()) {
+    if (!bot.socket.connected) {
+      global.botSockets.delete(id);
+    }
+  }
+
+  // Force GC if exposed
+  if (global.gc) {
+    try { global.gc(); } catch (_) {}
+  }
+
+  console.clear();
+}, 30000);
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🚀 START
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+server.listen(PORT, () => {
+  console.log("Server running on port " + PORT);
+  warmConnections();
+  // Keep the keep-alive sockets warm every 4 minutes
+  setInterval(warmConnections, 4 * 60 * 1000);
+});
