@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rabbit API - Premium Core Control</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #02040a;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+        .mono-text {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* 4K Cinematic Mesh Gradient Background */
+        .premium-mesh {
+            background: radial-gradient(circle at 80% 10%, rgba(244, 63, 94, 0.06) 0%, transparent 45%),
+                        radial-gradient(circle at 15% 80%, rgba(99, 102, 241, 0.06) 0%, transparent 50%),
+                        #02040a;
+        }
+        /* True Glassmorphism with Micro-Border Highlights */
+        .ultra-glass {
+            background: rgba(10, 14, 26, 0.4);
+            backdrop-filter: blur(24px) saturate(200%);
+            -webkit-backdrop-filter: blur(24px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        }
+        .neon-glow-rose:hover {
+            border-color: rgba(244, 63, 94, 0.3);
+            box-shadow: 0 0 30px rgba(244, 63, 94, 0.1);
+            transform: translateY(-2px);
+        }
+        /* Ultra Smooth Hardware-Accelerated Transitions */
+        .smooth-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        /* Custom Premium Hide Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #02040a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 99px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+        
+        /* Simulated Terminal Blinking Cursor */
+        .cursor-blink::after {
+            content: '█';
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body class="text-gray-200 min-h-screen flex premium-mesh antialiased">
+
+    <aside class="w-72 bg-slate-950/40 backdrop-blur-2xl border-r border-slate-900 flex flex-col justify-between hidden lg:flex z-50">
+        <div>
+            <div class="p-8 border-b border-slate-900/60 flex items-center gap-4">
+                <div class="relative">
+                    <div class="absolute inset-0 bg-gradient-to-r from-rose-500 to-indigo-600 rounded-xl blur-lg opacity-60 animate-pulse"></div>
+                    <div class="relative bg-gradient-to-br from-rose-500 to-indigo-600 p-3 rounded-xl text-white shadow-2xl">
+                        <i class="fa-solid fa-rabbit text-lg"></i>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="font-bold text-base uppercase tracking-widest text-white">Rabbit API</h1>
+                    <span class="text-[10px] mono-text text-rose-400 font-bold bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded-md mt-0.5 inline-block">ENGINE CLUSTER</span>
+                </div>
+            </div>
+
+            <nav class="mt-8 px-4 space-y-1">
+                <a href="#" class="flex items-center gap-3.5 px-4 py-3.5 bg-rose-500/10 text-rose-400 rounded-xl font-medium text-sm border border-rose-500/10 transition">
+                    <i class="fa-solid fa-chart-line text-base"></i> Live Telemetry
+                </a>
+                
+                <a href="/api.html" class="flex items-center justify-between px-4 py-3.5 text-slate-400 hover:bg-slate-900/50 hover:text-white rounded-xl font-medium text-sm smooth-transition group border border-transparent hover:border-rose-500/20">
+                    <div class="flex items-center gap-3.5">
+                        <i class="fa-solid fa-code text-base text-slate-500 group-hover:text-rose-400 smooth-transition"></i> 
+                        <span>API Documentation</span>
+                    </div>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-600 group-hover:text-rose-400 smooth-transition"></i>
+                </a>
+
+                <a href="#" class="flex items-center gap-3.5 px-4 py-3.5 text-slate-400 hover:bg-slate-900/50 hover:text-white rounded-xl font-medium text-sm smooth-transition">
+                    <i class="fa-solid fa-network-wired text-base"></i> Reverse Proxies
+                </a>
+                <a href="#" class="flex items-center gap-3.5 px-4 py-3.5 text-slate-400 hover:bg-slate-900/50 hover:text-white rounded-xl font-medium text-sm smooth-transition">
+                    <i class="fa-solid fa-shield-halved text-base"></i> Firewall Config
+                </a>
+            </nav>
+        </div>
+
+        <div class="p-8 border-t border-slate-900/60 flex items-center gap-3">
+            <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <p class="text-xs text-slate-500 font-medium tracking-wide">
+                Cluster Status: <span class="text-slate-300 font-semibold">Operational</span>
+            </p>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        
+        <header class="h-24 bg-slate-950/10 backdrop-blur-md border-b border-slate-900/40 flex items-center justify-between px-6 md:px-12 z-40">
+            <div class="flex items-center gap-4">
+                <button class="lg:hidden text-slate-400 hover:text-white text-xl">
+                    <i class="fa-solid fa-bars-staggered"></i>
+                </button>
+                <div>
+                    <h2 class="text-xl font-bold tracking-tight text-white">Rabbit API Node Monitor</h2>
+                    <p class="text-xs text-slate-500 tracking-wide mt-0.5">Monitoring end-to-end processing speeds and incoming packet streams.</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <a href="/api.html" class="relative group hidden md:inline-block">
+                    <div class="absolute inset-0 bg-gradient-to-r from-rose-500 to-indigo-600 rounded-xl blur opacity-30 group-hover:opacity-70 smooth-transition"></div>
+                    <button class="relative bg-slate-950 border border-rose-500/40 text-xs font-bold tracking-wider uppercase px-5 py-3 rounded-xl transition text-rose-300 group-hover:text-white flex items-center gap-2.5">
+                        <i class="fa-solid fa-square-terminal text-rose-400"></i> Go to API Docs
+                    </button>
+                </a>
+                
+                <div class="h-11 w-11 rounded-xl bg-gradient-to-tr from-rose-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-xl shadow-rose-500/10 border border-rose-400/20">
+                    RBT
+                </div>
+            </div>
+        </header>
+
+        <div class="p-6 md:p-12 max-w-[1700px] w-full mx-auto space-y-10">
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+                
+                <div class="ultra-glass p-6 rounded-2xl neon-glow-rose smooth-transition flex flex-col justify-between h-36">
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Throughput</span>
+                        <i class="fa-solid fa-chart-simple text-rose-400 text-base"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-3xl font-bold tracking-tight text-white mono-text" id="total-requests">1,24,582</h3>
+                        <p class="text-[11px] text-emerald-400 font-medium mt-1"><i class="fa-solid fa-caret-up"></i> Live tracking active</p>
+                    </div>
+                </div>
+
+                <div class="ultra-glass p-6 rounded-2xl neon-glow-rose smooth-transition flex flex-col justify-between h-36">
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Current Load</span>
+                        <i class="fa-solid fa-bolt-lightning text-amber-400 text-base"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-3xl font-bold tracking-tight text-white mono-text"><span id="live-rpm">164</span> <span class="text-xs text-slate-500 font-normal">req/m</span></h3>
+                        <p class="text-[11px] text-rose-400 font-medium mt-1"><i class="fa-solid fa-circle-check"></i> High performance lock</p>
+                    </div>
+                </div>
+
+                <div class="ultra-glass p-6 rounded-2xl neon-glow-rose smooth-transition flex flex-col justify-between h-36">
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Cluster Memory</span>
+                        <i class="fa-solid fa-microchip text-indigo-400 text-base"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-3xl font-bold tracking-tight text-white mono-text"><span id="live-ram">192.4</span> <span class="text-xs text-slate-500 font-normal">MB</span></h3>
+                        <div class="w-full bg-slate-900 h-1.5 rounded-full mt-3 overflow-hidden border border-slate-800/50">
+                            <div id="ram-progress" class="bg-gradient-to-r from-rose-500 to-indigo-500 h-full rounded-full shadow-lg smooth-transition" style="width: 38%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ultra-glass p-6 rounded-2xl neon-glow-rose smooth-transition flex flex-col justify-between h-36">
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Success Index</span>
+                        <i class="fa-solid fa-square-poll-vertical text-emerald-400 text-base"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-3xl font-bold tracking-tight text-emerald-400 mono-text">99.99%</h3>
+                        <p class="text-[11px] text-slate-500 font-medium mt-1">0 HTTP server failures logged</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                
+                <div class="ultra-glass p-8 rounded-2xl xl:col-span-2 space-y-6">
+                    <div class="flex items-center justify-between flex-wrap gap-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-white tracking-wide">Rabbit API Access Gateways</h3>
+                            <p class="text-xs text-slate-400 mt-1">Toggle live server endpoints on or off instantly without modifying configurations.</p>
+                        </div>
+                        <span class="text-[10px] font-bold tracking-wider uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full">Realtime Control</span>
+                    </div>
+
+                    <div class="space-y-3.5 pt-2">
+                        <div class="flex items-center justify-between p-4 bg-slate-950/40 border border-slate-900 rounded-xl hover:bg-slate-900/30 smooth-transition">
+                            <div class="flex items-center gap-4">
+                                <span class="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 rounded-lg text-[10px] font-bold tracking-wider mono-text">GET</span>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-white mono-text">/api/v2/yt-dl</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Media Stream & Downloader Processing Pipeline</p>
+                                </div>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" checked class="sr-only peer">
+                                <div class="w-10 h-5.5 bg-slate-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-slate-500 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-600 peer-checked:after:bg-white"></div>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-slate-950/40 border border-slate-900 rounded-xl hover:bg-slate-900/30 smooth-transition">
+                            <div class="flex items-center gap-4">
+                                <span class="px-2.5 py-1 bg-indigo-500/10 text-indigo-400 rounded-lg text-[10px] font-bold tracking-wider mono-text">POST</span>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-white mono-text">/api/v2/wa-react</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Automated Event Engine For WebHooks</p>
+                                </div>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" checked class="sr-only peer">
+                                <div class="w-10 h-5.5 bg-slate-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-slate-500 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-600 peer-checked:after:bg-white"></div>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-slate-950/40 border border-slate-900 rounded-xl hover:bg-slate-900/30 smooth-transition">
+                            <div class="flex items-center gap-4">
+                                <span class="px-2.5 py-1 bg-purple-500/10 text-purple-400 rounded-lg text-[10px] font-bold tracking-wider mono-text">GET</span>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-white mono-text">/api/v2/smm-sync</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">External Merchant Order Synchronization Web-Gate</p>
+                                direction: flex;
+                                </div>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer">
+                                <div class="w-10 h-5.5 bg-slate-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-slate-500 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-600 peer-checked:after:bg-white"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative overflow-hidden rounded-2xl border border-rose-500/30 bg-gradient-to-br from-rose-950/40 via-slate-950 to-slate-950 p-8 flex flex-col justify-between group shadow-xl">
+                    <div class="absolute -right-8 -top-8 w-44 h-44 bg-rose-500/10 rounded-full blur-3xl group-hover:bg-rose-500/20 smooth-transition"></div>
+                    
+                    <div class="space-y-5">
+                        <div class="w-12 h-12 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 flex items-center justify-center text-lg shadow-lg">
+                            <i class="fa-solid fa-terminal"></i>
+                        </div>
+                        
+                        <div>
+                            <span class="text-[10px] font-extrabold tracking-widest text-rose-400 bg-rose-500/10 px-2 py-1 rounded border border-rose-500/20 uppercase">Developer Resources</span>
+                            <h4 class="text-2xl font-black text-white tracking-wide mt-2">Go to API Docs</h4>
+                        </div>
+                        
+                        <div class="space-y-3 text-xs text-slate-400 leading-relaxed">
+                            <p>
+                                Read through structured code specifications, execution properties, query arguments, and complete server JSON payload frameworks.
+                            </p>
+                            <p class="border-l-2 border-rose-500/40 pl-3 text-slate-500 italic">
+                                Features interactive testing parameters and playground tools for developers to verify queries instantly.
+                            </p>
+                        </div>
+                    </div>
+
+                    <a href="/api.html" class="mt-8 block w-full py-4 bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white text-center font-bold rounded-xl tracking-wider uppercase text-xs shadow-lg shadow-rose-900/40 smooth-transition flex items-center justify-center gap-2 border border-rose-400/20">
+                        Go to API Docs
+                        <i class="fa-solid fa-chevron-right text-[10px] transition group-hover:translate-x-1 smooth-transition"></i>
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="ultra-glass rounded-2xl overflow-hidden">
+                <div class="px-8 py-6 border-b border-slate-900 flex items-center justify-between flex-wrap gap-4 bg-slate-950/20">
+                    <div>
+                        <h4 class="text-sm font-bold tracking-wider uppercase text-white">Live Stream Network Logs</h4>
+                        <p class="text-xs text-slate-500 mt-0.5">Realtime execution time and terminal console response headers.</p>
+                    </div>
+                    <div class="flex items-center gap-2 bg-emerald-500/5 border border-emerald-500/10 px-3 py-1.5 rounded-lg">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="text-[10px] tracking-widest text-emerald-400 uppercase font-bold mono-text">Streaming Live Feed</span>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse mono-text text-xs">
+                        <thead>
+                            <tr class="border-b border-slate-900 text-slate-500 text-[10px] font-bold uppercase tracking-widest bg-slate-950/60">
+                                <th class="py-4 px-8">System Timestamp</th>
+                                <th class="py-4 px-8">Method</th>
+                                <th class="py-4 px-8">Target Route</th>
+                                <th class="py-4 px-8">Network Status</th>
+                                <th class="py-4 px-8 text-right">Processing</th>
+                            </tr>
+                        </thead>
+                        <tbody id="log-table-body" class="divide-y divide-slate-900/60 text-[11px] text-slate-300">
+                            <tr class="hover:bg-slate-900/20 smooth-transition">
+                                <td class="py-4 px-8 text-slate-500">Connecting...</td>
+                                <td class="py-4 px-8 font-bold text-rose-400">SYS</td>
+                                <td class="py-4 px-8 text-slate-400 cursor-blink">Initializing stream matrix channel</td>
+                                <td class="py-4 px-8"><span class="text-indigo-400 bg-indigo-500/5 border border-indigo-500/10 px-2 py-0.5 rounded text-[10px] font-bold">101 SWAP</span></td>
+                                <td class="py-4 px-8 text-right text-rose-400 font-bold">0 ms</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        const endpoints = [
+            { method: 'GET', route: '/api/v2/yt-dl?url=https://youtube.com/watch?v=kX2d93', desc: '200 OK', color: 'text-emerald-400', bg: 'bg-emerald-500/5', border: 'border-emerald-500/10' },
+            { method: 'POST', route: '/api/v2/wa-react', desc: '201 CREATED', color: 'text-emerald-400', bg: 'bg-emerald-500/5', border: 'border-emerald-500/10' },
+            { method: 'GET', route: '/api/v2/smm-sync', desc: '304 NOT_MODIFIED', color: 'text-amber-400', bg: 'bg-amber-500/5', border: 'border-amber-500/10' },
+            { method: 'GET', route: '/api/v2/yt-dl?url=https://youtube.com/shorts/pL9a2', desc: '200 OK', color: 'text-emerald-400', bg: 'bg-emerald-500/5', border: 'border-emerald-500/10' },
+            { method: 'POST', route: '/api/v2/wa-react', desc: '400 BAD_REQUEST', color: 'text-rose-400', bg: 'bg-rose-500/5', border: 'border-rose-500/10' }
+        ];
+
+        let totalRequests = 124582;
+        const logTableBody = document.getElementById('log-table-body');
+        const totalRequestsEl = document.getElementById('total-requests');
+        const liveRpmEl = document.getElementById('live-rpm');
+        const liveRamEl = document.getElementById('live-ram');
+        const ramProgressEl = document.getElementById('ram-progress');
+
+        logTableBody.innerHTML = '';
+
+        function generateLiveLog() {
+            totalRequests += Math.floor(Math.random() * 3) + 1;
+            totalRequestsEl.textContent = totalRequests.toLocaleString();
+
+            const dynamicRpm = Math.floor(Math.random() * 45) + 150;
+            liveRpmEl.textContent = dynamicRpm;
+
+            const dynamicRam = (190 + Math.random() * 15).toFixed(1);
+            liveRamEl.textContent = dynamicRam;
+            ramProgressEl.style.width = `${(dynamicRam / 512 * 100).toFixed(1)}%`;
+
+            const target = endpoints[Math.floor(Math.random() * endpoints.length)];
+            const timeString = new Date().toTimeString().split(' ')[0] + '.' + Math.floor(Math.random() * 900 + 100);
+            const latency = Math.floor(Math.random() * 85) + 6;
+
+            const row = document.createElement('tr');
+            row.className = 'hover:bg-slate-900/20 smooth-transition opacity-0 transform -translate-y-2';
+            row.style.transition = 'all 0.5s ease-out';
+            
+            row.innerHTML = `
+                <td class="py-4 px-8 text-slate-500">${timeString}</td>
+                <td class="py-4 px-8 font-bold ${target.method === 'POST' ? 'text-indigo-400' : 'text-rose-400'}">${target.method}</td>
+                <td class="py-4 px-8 text-slate-300 font-mono tracking-tight">${target.route}</td>
+                <td class="py-4 px-8"><span class="${target.color} ${target.bg} ${target.border} border px-2 py-0.5 rounded text-[10px] font-bold">${target.desc}</span></td>
+                <td class="py-4 px-8 text-right text-rose-400 font-bold">${latency} ms</td>
+            `;
+
+            logTableBody.insertBefore(row, logTableBody.firstChild);
+            
+            setTimeout(() => {
+                row.classList.remove('opacity-0', '-translate-y-2');
+            }, 50);
+
+            if (logTableBody.children.length > 7) {
+                logTableBody.removeChild(logTableBody.lastChild);
+            }
+        }
+
+        setInterval(generateLiveLog, Math.floor(Math.random() * 1000) + 700);
+        for(let i=0; i<4; i++) { generateLiveLog(); }
+    </script>
+</body>
+</html>
