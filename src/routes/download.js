@@ -4,6 +4,10 @@ const { CREATOR } = require("../config");
 const { noCache, ax } = require("../utils/http");
 const { cacheMedia } = require("../utils/cache");
 
+
+
+
+
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 📸 ALL DOWNLOAD
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -77,6 +81,104 @@ router.get("/api/dwnall", async (req, res) => {
     });
   }
 });
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🐇 TERABOX V2 — STREAM / DOWNLOAD
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+router.get("/teraboxv2", async (req, res) => {
+  noCache(res);
+
+  try {
+    const { url } = req.query;
+
+    if (!url) {
+      return res.status(400).json({
+        status: "error",
+        creator: CREATOR,
+        message: "URL required"
+      });
+    }
+
+    const api = `https://nayan-video-downloader.vercel.app/teraboxv2?url=${encodeURIComponent(url)}`;
+
+    const response = await ax.get(api, {
+      timeout: 20000,
+      headers: {
+        "User-Agent": "Mozilla/5.0"
+      }
+    });
+
+    const data = response.data;
+
+    if (!data?.status || data.status !== "success" || !Array.isArray(data.videos) || !data.videos.length) {
+      return res.status(404).json({
+        status: "error",
+        creator: CREATOR,
+        message: "No videos found in this link"
+      });
+    }
+
+    const videos = data.videos.map((v) => {
+      // Re-cache every quality inside fast_stream_url under our own domain
+      const fastStream = {};
+      if (v.fast_stream_url) {
+        for (const [quality, link] of Object.entries(v.fast_stream_url)) {
+          fastStream[quality] = cacheMedia(req, link || null, ".m3u8");
+        }
+      }
+
+      const cachedDownload = cacheMedia(req, v.normal_dlink || null, ".mp4");
+
+      return {
+        fs_id: v.fs_id,
+        name: v.name,
+        file_path: v.file_path,
+        size: v.size,
+        size_formatted: v.size_formatted,
+        type: v.type,
+        is_dir: v.is_dir,
+        duration: v.duration || null,
+        quality: v.quality || null,
+        normal_dlink: cachedDownload,
+        download_link: cachedDownload,
+        stream_url: cacheMedia(req, v.stream_url || null, ".m3u8"),
+        fast_stream_url: fastStream,
+        subtitle_url: cacheMedia(req, v.subtitle_url || null, ".vtt"),
+        thumbnail: cacheMedia(req, v.thumbnail || null, ".webp"),
+        folder: v.folder || "root"
+      };
+    });
+
+    return res.json({
+      status: "success",
+      creator: CREATOR,
+      total_files: data.total_files ?? videos.length,
+      total_folders: data.total_folders ?? 0,
+      videos
+    });
+
+  } catch (err) {
+    if (err.code === "ECONNABORTED") {
+      return res.status(408).json({
+        status: "error",
+        creator: CREATOR,
+        message: "Request timeout"
+      });
+    }
+
+    return res.status(500).json({
+      status: "error",
+      creator: CREATOR,
+      message: "Internal Server Error",
+      error: err.message
+    });
+  }
+});
+
+
+
+
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 🎥 YOUTUBE DOWNLOADER
