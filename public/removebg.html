@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rabbit XMD — Remove Background</title>
+<meta name="description" content="Remove image backgrounds instantly. Drop a photo or paste a link, get a clean transparent PNG." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --void:#0A0B0D;
+    --graphite:#15171B;
+    --graphite-2:#1B1D22;
+    --graphite-3:#212329;
+    --line:rgba(237,237,238,0.09);
+    --line-strong:rgba(237,237,238,0.16);
+    --bone:#EDEDEE;
+    --bone-dim:rgba(237,237,238,0.62);
+    --bone-faint:rgba(237,237,238,0.38);
+    --brass:#CBA135;
+    --brass-bright:#E4BE4E;
+    --brass-soft:rgba(203,161,53,0.14);
+    --violet:#7C5CFC;
+    --violet-soft:rgba(124,92,252,0.16);
+    --danger:#E5654F;
+    --checker-a:#1C1E23;
+    --checker-b:#26282E;
+    --radius-lg:20px;
+    --radius-md:14px;
+    --radius-sm:9px;
+    --display:'Space Grotesk', sans-serif;
+    --body:'Inter', sans-serif;
+    --mono:'JetBrains Mono', monospace;
+    --ease:cubic-bezier(.22,.68,.35,1);
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0;
+    padding:0;
+    background:var(--void);
+    color:var(--bone);
+    font-family:var(--body);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  body{
+    min-height:100vh;
+    background-image:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(124,92,252,0.10), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 105% 10%, rgba(203,161,53,0.08), transparent 60%);
+  }
+
+  a{ color:inherit; }
+
+  ::selection{ background:var(--brass-soft); color:var(--brass-bright); }
+
+  :focus-visible{
+    outline:2px solid var(--brass);
+    outline-offset:3px;
+    border-radius:6px;
+  }
+
+  .wrap{
+    max-width:1040px;
+    margin:0 auto;
+    padding:0 24px;
+  }
+
+  /* ---------- Header ---------- */
+
+  header{
+    padding:32px 0 0;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+
+  .brand-mark{
+    width:34px; height:34px;
+    flex-shrink:0;
+    position:relative;
+  }
+  .brand-mark svg{ width:100%; height:100%; display:block; }
+
+  .brand-name{
+    font-family:var(--display);
+    font-weight:600;
+    font-size:16.5px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--bone);
+  }
+
+  .brand-name span{ color:var(--brass); }
+
+  .header-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+  }
+
+  .status-pill{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:var(--mono);
+    font-size:11.5px;
+    letter-spacing:0.05em;
+    color:var(--bone-dim);
+    padding:7px 12px 7px 10px;
+    border:1px solid var(--line);
+    border-radius:100px;
+    background:rgba(255,255,255,0.02);
+  }
+
+  .status-dot{
+    width:7px; height:7px;
+    border-radius:50%;
+    background:#5FD68A;
+    box-shadow:0 0 0 3px rgba(95,214,138,0.15);
+    flex-shrink:0;
+  }
+
+  /* ---------- Hero ---------- */
+
+  .hero{
+    padding:76px 0 44px;
+    text-align:center;
+  }
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--brass);
+    margin:0 0 20px;
+  }
+
+  h1{
+    font-family:var(--display);
+    font-weight:600;
+    font-size:clamp(34px, 6vw, 64px);
+    line-height:1.04;
+    letter-spacing:-0.01em;
+    margin:0 0 20px;
+  }
+
+  h1 em{
+    font-style:normal;
+    background:linear-gradient(100deg, var(--brass-bright), var(--violet) 105%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+
+  .sub{
+    font-size:16.5px;
+    line-height:1.6;
+    color:var(--bone-dim);
+    max-width:480px;
+    margin:0 auto;
+  }
+
+  /* ---------- Panel ---------- */
+
+  .panel{
+    background:linear-gradient(180deg, var(--graphite), var(--graphite-2));
+    border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    padding:28px;
+    box-shadow:0 30px 80px -30px rgba(0,0,0,0.6);
+  }
+
+  .mode-toggle{
+    display:inline-flex;
+    padding:4px;
+    background:rgba(0,0,0,0.28);
+    border:1px solid var(--line);
+    border-radius:100px;
+    margin-bottom:22px;
+  }
+
+  .mode-btn{
+    font-family:var(--mono);
+    font-size:12.5px;
+    letter-spacing:0.03em;
+    padding:9px 18px;
+    border-radius:100px;
+    border:none;
+    background:transparent;
+    color:var(--bone-faint);
+    cursor:pointer;
+    transition:color .2s var(--ease), background .2s var(--ease);
+  }
+
+  .mode-btn.active{
+    background:var(--bone);
+    color:var(--void);
+  }
+
+  .mode-panel{ display:none; }
+  .mode-panel.active{ display:block; }
+
+  /* Drop zone */
+
+  .dropzone{
+    position:relative;
+    border:1.5px dashed var(--line-strong);
+    border-radius:var(--radius-md);
+    padding:48px 24px;
+    text-align:center;
+    cursor:pointer;
+    transition:border-color .25s var(--ease), background .25s var(--ease);
+    background:rgba(255,255,255,0.012);
+  }
+
+  .dropzone:hover, .dropzone.drag{
+    border-color:var(--brass);
+    background:var(--brass-soft);
+  }
+
+  .dropzone input[type="file"]{
+    position:absolute;
+    inset:0;
+    opacity:0;
+    cursor:pointer;
+  }
+
+  .dz-icon{
+    width:46px; height:46px;
+    margin:0 auto 18px;
+    color:var(--brass);
+  }
+  .dz-icon svg{ width:100%; height:100%; }
+
+  .dz-title{
+    font-family:var(--display);
+    font-size:18px;
+    font-weight:500;
+    margin:0 0 6px;
+  }
+
+  .dz-sub{
+    font-size:13.5px;
+    color:var(--bone-faint);
+    margin:0;
+  }
+
+  .dz-caption{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--bone-faint);
+    letter-spacing:0.04em;
+    margin-top:14px;
+  }
+
+  /* URL mode */
+
+  .url-row{
+    display:flex;
+    gap:10px;
+  }
+
+  .url-row input{
+    flex:1;
+    background:rgba(0,0,0,0.28);
+    border:1px solid var(--line-strong);
+    border-radius:var(--radius-sm);
+    padding:15px 16px;
+    color:var(--bone);
+    font-family:var(--body);
+    font-size:14.5px;
+  }
+
+  .url-row input::placeholder{ color:var(--bone-faint); }
+
+  .url-row input:focus{
+    border-color:var(--brass);
+  }
+
+  .btn{
+    font-family:var(--display);
+    font-weight:600;
+    font-size:14px;
+    letter-spacing:0.01em;
+    border:none;
+    border-radius:var(--radius-sm);
+    padding:15px 24px;
+    cursor:pointer;
+    transition:transform .15s var(--ease), box-shadow .15s var(--ease), opacity .15s var(--ease);
+    white-space:nowrap;
+  }
+
+  .btn-primary{
+    background:linear-gradient(120deg, var(--brass-bright), var(--brass));
+    color:#1B1200;
+    box-shadow:0 10px 30px -12px rgba(203,161,53,0.55);
+  }
+
+  .btn-primary:hover{ transform:translateY(-1px); }
+  .btn-primary:disabled{ opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; }
+
+  .btn-ghost{
+    background:transparent;
+    border:1px solid var(--line-strong);
+    color:var(--bone-dim);
+  }
+  .btn-ghost:hover{ border-color:var(--brass); color:var(--brass-bright); }
+
+  /* ---------- Processing ---------- */
+
+  .processing{
+    display:none;
+    align-items:center;
+    gap:18px;
+    padding:40px 10px;
+  }
+  .processing.active{ display:flex; }
+
+  .ring{
+    width:44px; height:44px;
+    border-radius:50%;
+    flex-shrink:0;
+    background:conic-gradient(var(--brass) 0deg, var(--violet) 200deg, transparent 200deg);
+    -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
+    mask:radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
+    animation:spin 0.9s linear infinite;
+  }
+
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .processing-text{
+    font-family:var(--mono);
+    font-size:13px;
+    color:var(--bone-dim);
+    letter-spacing:0.03em;
+  }
+  .processing-text b{ color:var(--bone); font-weight:500; }
+
+  /* ---------- Error ---------- */
+
+  .err{
+    display:none;
+    align-items:flex-start;
+    gap:12px;
+    padding:16px 18px;
+    border-radius:var(--radius-sm);
+    border:1px solid rgba(229,101,79,0.35);
+    background:rgba(229,101,79,0.08);
+    margin-top:18px;
+  }
+  .err.active{ display:flex; }
+  .err-dot{
+    width:7px; height:7px; border-radius:50%;
+    background:var(--danger); margin-top:6px; flex-shrink:0;
+  }
+  .err-title{ font-size:14px; font-weight:600; margin:0 0 3px; color:#F3B8AB; }
+  .err-body{ font-size:13px; color:var(--bone-dim); margin:0; line-height:1.5; }
+
+  /* ---------- Result ---------- */
+
+  .result{
+    display:none;
+    margin-top:32px;
+  }
+  .result.active{ display:block; }
+
+  .result-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+  }
+
+  @media (max-width:640px){
+    .result-grid{ grid-template-columns:1fr; }
+  }
+
+  .frame{
+    border-radius:var(--radius-md);
+    overflow:hidden;
+    border:1px solid var(--line);
+    position:relative;
+    aspect-ratio:1/1;
+  }
+
+  .frame-label{
+    position:absolute;
+    top:12px; left:12px;
+    font-family:var(--mono);
+    font-size:10.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--bone);
+    background:rgba(0,0,0,0.55);
+    -webkit-backdrop-filter:blur(6px);
+    backdrop-filter:blur(6px);
+    padding:5px 9px;
+    border-radius:100px;
+    z-index:2;
+  }
+
+  .frame.before{ background:var(--graphite-3); }
+
+  .frame.after{
+    background-image:
+      repeating-conic-gradient(var(--checker-a) 0% 25%, var(--checker-b) 0% 50%);
+    background-size:22px 22px;
+  }
+
+  .frame img{
+    width:100%; height:100%;
+    object-fit:contain;
+    display:block;
+    position:relative;
+    z-index:1;
+  }
+
+  .frame.after img{
+    animation:reveal 0.85s var(--ease) both;
+  }
+
+  @keyframes reveal{
+    from{ clip-path:polygon(0 0, 0 0, 0 100%, 0 100%); opacity:0.4; }
+    to{ clip-path:polygon(0 0, 100% 0, 100% 100%, 0 100%); opacity:1; }
+  }
+
+  .result-actions{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    margin-top:22px;
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .ring{ animation:none; }
+    .frame.after img{ animation:none; }
+    .btn-primary:hover{ transform:none; }
+  }
+
+  /* ---------- Footer ---------- */
+
+  footer{
+    padding:60px 0 48px;
+    text-align:center;
+  }
+
+  .footer-line{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--bone-faint);
+    letter-spacing:0.04em;
+  }
+
+  .footer-line .sep{ margin:0 10px; opacity:0.5; }
+  .footer-line .brass-txt{ color:var(--brass); }
+
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <div class="header-row">
+      <div class="brand">
+        <div class="brand-mark">
+          <svg viewBox="0 0 34 34" fill="none">
+            <path d="M9 14 L11 3" stroke="#CBA135" stroke-width="2.4" stroke-linecap="round"/>
+            <path d="M25 14 L23 3" stroke="#CBA135" stroke-width="2.4" stroke-linecap="round"/>
+            <rect x="6" y="13" width="22" height="16" rx="8" fill="#CBA135"/>
+            <circle cx="13.5" cy="21" r="1.8" fill="#0A0B0D"/>
+            <circle cx="20.5" cy="21" r="1.8" fill="#0A0B0D"/>
+          </svg>
+        </div>
+        <div class="brand-name">RABBIT <span>XMD</span></div>
+      </div>
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        API ONLINE
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <p class="eyebrow">Image / Background Removal</p>
+    <h1>Cut the noise.<br><em>Keep the subject.</em></h1>
+    <p class="sub">Drop a photo or paste a link — the background disappears in seconds, straight to a clean transparent PNG.</p>
+  </section>
+
+  <section class="panel">
+
+    <div class="mode-toggle" role="tablist">
+      <button class="mode-btn active" id="tabUpload" role="tab" aria-selected="true">Upload file</button>
+      <button class="mode-btn" id="tabUrl" role="tab" aria-selected="false">Paste URL</button>
+    </div>
+
+    <!-- Upload mode -->
+    <div class="mode-panel active" id="panelUpload">
+      <label class="dropzone" id="dropzone">
+        <input type="file" id="fileInput" accept="image/png, image/jpeg, image/webp" />
+        <div class="dz-icon">
+          <svg viewBox="0 0 46 46" fill="none">
+            <path d="M23 30V12M23 12L15 20M23 12L31 20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 33V36C9 37.66 10.34 39 12 39H34C35.66 39 37 37.66 37 36V33" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <p class="dz-title">Drag &amp; drop an image</p>
+        <p class="dz-sub">or click to browse your files</p>
+        <p class="dz-caption">JPG · PNG · WEBP · UP TO 10MB</p>
+      </label>
+    </div>
+
+    <!-- URL mode -->
+    <div class="mode-panel" id="panelUrl">
+      <div class="url-row">
+        <input type="url" id="urlInput" placeholder="https://example.com/photo.jpg" />
+        <button class="btn btn-primary" id="urlSubmit">Remove BG</button>
+      </div>
+    </div>
+
+    <!-- Processing -->
+    <div class="processing" id="processing">
+      <div class="ring"></div>
+      <p class="processing-text"><b>Removing background</b> — this usually takes a few seconds…</p>
+    </div>
+
+    <!-- Error -->
+    <div class="err" id="errBox">
+      <span class="err-dot"></span>
+      <div>
+        <p class="err-title" id="errTitle">Something went wrong</p>
+        <p class="err-body" id="errBody">Couldn't process this image. Try another file or check the link.</p>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div class="result" id="result">
+      <div class="result-grid">
+        <div class="frame before">
+          <span class="frame-label">Original</span>
+          <img id="beforeImg" alt="Original upload" />
+        </div>
+        <div class="frame after">
+          <span class="frame-label">Cutout</span>
+          <img id="afterImg" alt="Background removed" />
+        </div>
+      </div>
+      <div class="result-actions">
+        <button class="btn btn-primary" id="downloadBtn">Download PNG</button>
+        <button class="btn btn-ghost" id="resetBtn">Remove another</button>
+      </div>
+    </div>
+
+  </section>
+
+  <footer>
+    <p class="footer-line">Made by <span class="brass-txt">Rabbit XMD</span><span class="sep">·</span>2026</p>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  const tabUpload = document.getElementById('tabUpload');
+  const tabUrl = document.getElementById('tabUrl');
+  const panelUpload = document.getElementById('panelUpload');
+  const panelUrl = document.getElementById('panelUrl');
+
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const urlInput = document.getElementById('urlInput');
+  const urlSubmit = document.getElementById('urlSubmit');
+
+  const processing = document.getElementById('processing');
+  const errBox = document.getElementById('errBox');
+  const errTitle = document.getElementById('errTitle');
+  const errBody = document.getElementById('errBody');
+  const result = document.getElementById('result');
+  const beforeImg = document.getElementById('beforeImg');
+  const afterImg = document.getElementById('afterImg');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const resetBtn = document.getElementById('resetBtn');
+
+  let currentResultUrl = null;
+
+  function switchTab(mode){
+    const isUpload = mode === 'upload';
+    tabUpload.classList.toggle('active', isUpload);
+    tabUrl.classList.toggle('active', !isUpload);
+    tabUpload.setAttribute('aria-selected', isUpload);
+    tabUrl.setAttribute('aria-selected', !isUpload);
+    panelUpload.classList.toggle('active', isUpload);
+    panelUrl.classList.toggle('active', !isUpload);
+    hideAll();
+  }
+
+  tabUpload.addEventListener('click', () => switchTab('upload'));
+  tabUrl.addEventListener('click', () => switchTab('url'));
+
+  function hideAll(){
+    processing.classList.remove('active');
+    errBox.classList.remove('active');
+    result.classList.remove('active');
+  }
+
+  function showProcessing(){
+    hideAll();
+    processing.classList.add('active');
+  }
+
+  function showError(title, body){
+    hideAll();
+    errTitle.textContent = title;
+    errBody.textContent = body;
+    errBox.classList.add('active');
+  }
+
+  function showResult(beforeSrc, afterSrc){
+    hideAll();
+    beforeImg.src = beforeSrc;
+    afterImg.src = afterSrc;
+    currentResultUrl = afterSrc;
+    // restart reveal animation
+    afterImg.style.animation = 'none';
+    void afterImg.offsetWidth;
+    afterImg.style.animation = '';
+    result.classList.add('active');
+  }
+
+  // ---------- Drag & drop ----------
+
+  ['dragenter','dragover'].forEach(evt => {
+    dropzone.addEventListener(evt, e => {
+      e.preventDefault();
+      dropzone.classList.add('drag');
+    });
+  });
+
+  ['dragleave','drop'].forEach(evt => {
+    dropzone.addEventListener(evt, e => {
+      e.preventDefault();
+      dropzone.classList.remove('drag');
+    });
+  });
+
+  dropzone.addEventListener('drop', e => {
+    const file = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  });
+
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files && fileInput.files[0];
+    if (file) handleFile(file);
+  });
+
+  async function handleFile(file){
+    if (!file.type.startsWith('image/')){
+      showError('Unsupported file', 'Please choose a JPG, PNG, or WEBP image.');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024){
+      showError('File too large', 'Please choose an image under 10MB.');
+      return;
+    }
+
+    const localPreview = URL.createObjectURL(file);
+    showProcessing();
+
+    try{
+      const form = new FormData();
+      form.append('image', file);
+
+      const res = await fetch('/api/removebg', {
+        method: 'POST',
+        body: form
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || data.status !== 'success' || !data.result || !data.result.url){
+        showError('Couldn\u2019t remove the background', 'This image couldn\u2019t be processed. Try a different photo.');
+        return;
+      }
+
+      showResult(localPreview, data.result.url);
+    } catch(err){
+      showError('Connection issue', 'Couldn\u2019t reach the removal service. Check your connection and try again.');
+    }
+  }
+
+  // ---------- URL mode ----------
+
+  urlSubmit.addEventListener('click', () => submitUrl());
+  urlInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitUrl();
+  });
+
+  async function submitUrl(){
+    const val = urlInput.value.trim();
+    if (!val){
+      showError('Link required', 'Paste a direct link to an image before continuing.');
+      return;
+    }
+
+    let parsed;
+    try{ parsed = new URL(val); }
+    catch{
+      showError('Invalid link', 'That doesn\u2019t look like a valid URL. Double check and try again.');
+      return;
+    }
+
+    showProcessing();
+
+    try{
+      const res = await fetch('/api/removebg?url=' + encodeURIComponent(val));
+      const data = await res.json();
+
+      if (!res.ok || data.status !== 'success' || !data.result || !data.result.url){
+        showError('Couldn\u2019t remove the background', 'This link couldn\u2019t be processed. Make sure it points directly to an image.');
+        return;
+      }
+
+      showResult(parsed.href, data.result.url);
+    } catch(err){
+      showError('Connection issue', 'Couldn\u2019t reach the removal service. Check your connection and try again.');
+    }
+  }
+
+  // ---------- Download ----------
+
+  downloadBtn.addEventListener('click', async () => {
+    if (!currentResultUrl) return;
+    try{
+      const res = await fetch(currentResultUrl);
+      const blob = await res.blob();
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'rabbitxmd-cutout.png';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch(err){
+      window.open(currentResultUrl, '_blank');
+    }
+  });
+
+  resetBtn.addEventListener('click', () => {
+    hideAll();
+    fileInput.value = '';
+    urlInput.value = '';
+    currentResultUrl = null;
+  });
+
+})();
+</script>
+
+</body>
+</html>
