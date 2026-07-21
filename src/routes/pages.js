@@ -1,10 +1,11 @@
 const express = require("express");
+const path = require("path");
 const router = express.Router();
 const { noCache } = require("../utils/http");
 
 router.get("/", (req, res) => {
   noCache(res);
-  res.sendFile(__dirname + "/../../index.html");
+  res.sendFile(path.join(__dirname, "..", "..", "index.html"));
 });
 
 router.get("/ads.txt", (req, res) => {
@@ -38,27 +39,27 @@ router.get("/sitemap.xml", (req, res) => {
 
 router.get("/terabox", (req, res) => {
   noCache(res);
-  res.sendFile(__dirname + "/../../public/terabox.html");
+  res.sendFile(path.join(__dirname, "..", "..", "public", "terabox.html"));
 });
 
 router.get("/upload", (req, res) => {
   noCache(res);
-  res.sendFile(__dirname + "/../../public/upload.html");
+  res.sendFile(path.join(__dirname, "..", "..", "public", "upload.html"));
 });
 
 router.get("/category/downloader", (req, res) => {
   noCache(res);
-  res.sendFile(__dirname + "/../../category/public/downloader.html");
+  res.sendFile(path.join(__dirname, "..", "..", "public", "category", "downloader.html"));
 });
 
 router.get("/removebg", (req, res) => {
   noCache(res);
-  res.sendFile(__dirname + "/../../public/removebg.html");
+  res.sendFile(path.join(__dirname, "..", "..", "public", "removebg.html"));
 });
 
 router.get("/api.html", (req, res) => {
   noCache(res);
-  res.sendFile(__dirname + "/../../public/api.html");
+  res.sendFile(path.join(__dirname, "..", "..", "public", "api.html"));
 });
 
 module.exports = router;
