@@ -36,24 +36,29 @@ router.get("/sitemap.xml", (req, res) => {
 </urlset>`);
 });
 
+router.get("/terabox", (req, res) => {
+  noCache(res);
+  res.sendFile(__dirname + "/../../public/terabox.html");
+});
+
 router.get("/upload", (req, res) => {
   noCache(res);
-  res.sendFile(__dirname + "/../../upload.html");
+  res.sendFile(__dirname + "/../../public/upload.html");
 });
 
 router.get("/category/downloader", (req, res) => {
   noCache(res);
-  res.sendFile(__dirname + "/../../category/downloader.html");
+  res.sendFile(__dirname + "/../../category/public/downloader.html");
 });
 
 router.get("/removebg", (req, res) => {
   noCache(res);
-  res.sendFile(__dirname + "/../../removebg.html");
+  res.sendFile(__dirname + "/../../public/removebg.html");
 });
 
 router.get("/api.html", (req, res) => {
   noCache(res);
-  res.sendFile(__dirname + "/../../api.html");
+  res.sendFile(__dirname + "/../../public/api.html");
 });
 
 module.exports = router;
