@@ -13,4 +13,6 @@ const JERRY_HEADERS = {
 
 const PORT = process.env.PORT || 4000;
 
-module.exports = { CREATOR, JERRY_HEADERS, PORT };
+const MONGODB_URI = "mongodb+srv://username:password@cluster.mongodb.net/dbname";
+
+module.exports = { CREATOR, JERRY_HEADERS, PORT, MONGODB_URI };
