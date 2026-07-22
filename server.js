@@ -39,6 +39,10 @@ app.set("trust proxy", true);
 // (Other routes use multer for multipart uploads and don't need this.)
 app.use(express.json({ limit: "25mb" }));
 
+// Static frontend files (e.g. /fullpp.html serves public/fullpp.html directly).
+// A friendlier /fullpp route is also mounted in src/routes/pages.js.
+app.use(express.static(__dirname + "/public"));
+
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // MOUNT ROUTES
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
