@@ -19,6 +19,7 @@ const pinterestRouter = require("./src/routes/pinterest");
 const toolsRouter = require("./src/routes/tools");
 const cdnRouter = require("./src/routes/cdn");
 const ghibliRouter = require("./src/routes/ghibli");
+const neuropairRouter = require("./src/routes/neuropair");
 
 const app = express();
 app.disable("x-powered-by");
@@ -33,6 +34,10 @@ const io = new Server(server, {
 global.botSockets = new Map();
 
 app.set("trust proxy", true);
+
+// Needed for /api/neuropair/pair, which accepts { phone, imageBase64 } as JSON.
+// (Other routes use multer for multipart uploads and don't need this.)
+app.use(express.json({ limit: "25mb" }));
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // MOUNT ROUTES
@@ -49,6 +54,7 @@ app.use(pinterestRouter);
 app.use(toolsRouter);
 app.use(cdnRouter);
 app.use(ghibliRouter);
+app.use(neuropairRouter);
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // SOCKET.IO
