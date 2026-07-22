@@ -3,6 +3,7 @@ const http = require("http");
 const { Server } = require("socket.io");
 
 const { PORT } = require("./src/config");
+const { connectDB } = require("./src/db");
 const { warmConnections } = require("./src/utils/http");
 const { attachSocketHandlers } = require("./src/socket");
 
@@ -20,6 +21,7 @@ const toolsRouter = require("./src/routes/tools");
 const cdnRouter = require("./src/routes/cdn");
 const ghibliRouter = require("./src/routes/ghibli");
 const neuropairRouter = require("./src/routes/neuropair");
+const proxyRouter = require("./src/routes/proxy"); // short-link stream proxy — MUST stay last
 
 const app = express();
 app.disable("x-powered-by");
@@ -44,6 +46,13 @@ app.use(express.json({ limit: "25mb" }));
 app.use(express.static(__dirname + "/public"));
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// MONGODB
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+connectDB().catch((err) => {
+  console.error("❌ MongoDB connection failed:", err.message);
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // MOUNT ROUTES
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 app.use(pagesRouter);
@@ -59,6 +68,7 @@ app.use(toolsRouter);
 app.use(cdnRouter);
 app.use(ghibliRouter);
 app.use(neuropairRouter);
+app.use(proxyRouter); // short-link stream proxy — must be mounted LAST
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // SOCKET.IO
