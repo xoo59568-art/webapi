@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const axios = require("axios");
 const multer = require("multer");
 const FormData = require("form-data");
 const { CREATOR } = require("../config");
-const { noCache, ax, safeDestroy } = require("../utils/http");
+const { noCache, ax } = require("../utils/http");
+const { shortenLink } = require("../utils/shortlink");
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -12,201 +12,108 @@ const upload = multer({
 });
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// ☁️ CDN UPLOAD (file)
+// 🐇 THE ONLY UPLOAD ENDPOINT: /upload
+//    - POST /upload  (multipart "file" field)  -> random hosting backend
+//    - GET  /upload?url=...                    -> upload-from-url
+//    - POST /upload  (body: { url })           -> upload-from-url
+//    Response never reveals which backend was used. Every link returned
+//    is a short "/xxxxx.ext" URL streamed live by proxy.js — no redirect.
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-router.post("/cdn/upload", upload.single("file"), async (req, res) => {
+const PROVIDERS = ["ar-hosting", "cdnfile"];
+const pickProvider = () => PROVIDERS[Math.floor(Math.random() * PROVIDERS.length)];
+
+async function uploadFileToArHosting(file) {
+  const form = new FormData();
+  form.append("file", file.buffer, { filename: file.originalname, contentType: file.mimetype });
+
+  const { data } = await ax.post("https://ar-hosting.pages.dev/upload", form, {
+    headers: { ...form.getHeaders() },
+    timeout: 120000,
+    maxBodyLength: Infinity
+  });
+
+  return {
+    realUrl: data.url,
+    size: data.size,
+    type: data.media_type,
+    uploaded: data.uploaded_on
+  };
+}
+
+async function uploadFileToCdnfile(file) {
+  const form = new FormData();
+  form.append("file", file.buffer, file.originalname);
+
+  const { data } = await ax.post("https://cdnfile.pages.dev/upload", form, {
+    headers: form.getHeaders(),
+    maxBodyLength: Infinity
+  });
+
+  return {
+    realUrl: data.url,
+    size: file.size || null,
+    type: file.mimetype || null,
+    uploaded: new Date().toISOString()
+  };
+}
+
+async function uploadUrlToArHosting(url) {
+  const { data } = await ax.get(`https://ar-hosting.pages.dev/hosturl?url=${encodeURIComponent(url)}`);
+  return {
+    realUrl: data.url,
+    size: data.size,
+    type: data.media_type,
+    uploaded: data.uploaded_on
+  };
+}
+
+router.all("/upload", upload.single("file"), async (req, res) => {
   noCache(res);
+  const url = req.query.url || (req.body && req.body.url);
+
   try {
-    if (!req.file) return res.json({ status: false, creator: CREATOR, message: "No file uploaded" });
+    let result;
 
-    const form = new FormData();
-    form.append("file", req.file.buffer, req.file.originalname);
+    if (req.file) {
+      // ── File upload: pick a random backend, never expose which one ──
+      const provider = pickProvider();
+      result = provider === "ar-hosting"
+        ? await uploadFileToArHosting(req.file)
+        : await uploadFileToCdnfile(req.file);
 
-    const response = await ax.post("https://cdnfile.pages.dev/upload", form, {
-      headers: form.getHeaders(),
-      maxBodyLength: Infinity
-    });
+    } else if (url) {
+      // ── Upload from URL ──
+      result = await uploadUrlToArHosting(url);
 
-    const filename = response.data.url.split("/").pop();
-    const base = `${req.protocol}://${req.get("host")}`;
+    } else {
+      return res.status(400).json({
+        success: false,
+        code: 400,
+        creator: CREATOR,
+        message: "Provide a file (multipart 'file' field) or a ?url= parameter"
+      });
+    }
 
-    res.json({
-      status: true,
+    const shortUrl = await shortenLink(req, result.realUrl);
+
+    return res.json({
+      success: true,
+      code: 200,
       creator: CREATOR,
-      filename,
-      url: `${base}/file/${filename}`,
-      cdn: `${base}/file/${filename}`
-    });
-  } catch (e) {
-    res.json({ status: false, creator: CREATOR, error: e.message });
-  } finally {
-    // free buffer from memory immediately
-    if (req.file) req.file.buffer = null;
-  }
-});
-
-router.post("/upload", upload.single("file"), async (req, res) => {
-  noCache(res);
-  try {
-    if (!req.file) return res.status(400).json({ success: false, code: 400, creator: CREATOR, message: "No file uploaded" });
-
-    const form = new FormData();
-    form.append("file", req.file.buffer, { filename: req.file.originalname, contentType: req.file.mimetype });
-
-    const response = await ax.post("https://ar-hosting.pages.dev/upload", form, {
-      headers: { ...form.getHeaders() },
-      timeout: 120000,
-      maxBodyLength: Infinity
-    });
-
-    const filename = response.data.url.split("/").pop();
-    const base = `${req.protocol}://${req.get("host")}`;
-
-    res.json({
-      success: true,
-      code: 200,
-      creator: "RabbitX CDN",
       result: {
-        name: filename,
-        size: response.data.size,
-        type: response.data.media_type,
-        uploaded: response.data.uploaded_on,
-        url: `${base}/cdn/${filename}`,
-        cdn: `${base}/cdn/${filename}`
+        size: result.size,
+        type: result.type,
+        uploaded: result.uploaded,
+        url: shortUrl,
+        cdn: shortUrl
       }
     });
+
   } catch (e) {
-    res.status(500).json({ success: false, code: 500, creator: CREATOR, error: e.message });
+    return res.status(500).json({ success: false, code: 500, creator: CREATOR, error: e.message });
   } finally {
     if (req.file) req.file.buffer = null;
-  }
-});
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 🌐 UPLOAD FROM URL
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-router.get("/upload/url", async (req, res) => {
-  noCache(res);
-  try {
-    const { url } = req.query;
-    if (!url) return res.status(400).json({ success: false, code: 400, creator: CREATOR, message: "URL parameter required" });
-
-    const response = await ax.get(`https://ar-hosting.pages.dev/hosturl?url=${encodeURIComponent(url)}`);
-    const filename = response.data.url.split("/").pop();
-    const base = `${req.protocol}://${req.get("host")}`;
-
-    res.json({
-      success: true,
-      code: 200,
-      creator: "RabbitX CDN",
-      result: {
-        name: filename,
-        size: response.data.size,
-        type: response.data.media_type,
-        uploaded: response.data.uploaded_on,
-        url: `${base}/cdn/${filename}`,
-        cdn: `${base}/cdn/${filename}`
-      }
-    });
-  } catch (e) {
-    res.status(500).json({ success: false, code: 500, creator: CREATOR, error: e.message });
-  }
-});
-
-router.get("/cdn/url", async (req, res) => {
-  noCache(res);
-  try {
-    const { url } = req.query;
-    if (!url) return res.status(400).json({ success: false, code: 400, creator: CREATOR, message: "URL required" });
-
-    const response = await ax.get(`https://ar-hosting.pages.dev/hosturl?url=${encodeURIComponent(url)}`);
-    const filename = response.data.url.split("/").pop();
-    const base = `${req.protocol}://${req.get("host")}`;
-
-    res.json({
-      success: true,
-      code: 200,
-      creator: "RabbitX CDN",
-      result: {
-        name: filename,
-        size: response.data.size,
-        type: response.data.media_type,
-        uploaded: response.data.uploaded_on,
-        cdn: `${base}/cdn/${filename}`
-      }
-    });
-  } catch (e) {
-    res.status(500).json({ success: false, code: 500, creator: CREATOR, error: e.message });
-  }
-});
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 📂 CDN FILE PROXY (/file/:file)
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-router.get("/file/:file", async (req, res) => {
-  noCache(res);
-  let stream;
-  try {
-    const target = `https://cdnfile.pages.dev/${req.params.file}`;
-    const response = await axios({ url: target, method: "GET", responseType: "stream", timeout: 30000 });
-
-    stream = response.data;
-
-    if (response.headers["content-type"])   res.setHeader("Content-Type",   response.headers["content-type"]);
-    if (response.headers["content-length"]) res.setHeader("Content-Length", response.headers["content-length"]);
-
-    res.setHeader("Accept-Ranges",  "bytes");
-    res.setHeader("x-rabbit-cdn",   "RabbitX Edge");
-    noCache(res);
-
-    stream.on("end",   () => safeDestroy(stream));
-    stream.on("close", () => safeDestroy(stream));
-    stream.on("error", () => safeDestroy(stream));
-    req.on("close",    () => safeDestroy(stream));
-    res.on("finish",   () => safeDestroy(stream));
-
-    stream.pipe(res);
-  } catch (e) {
-    safeDestroy(stream);
-    res.status(404).json({ status: false, creator: CREATOR, message: "File not found" });
-  }
-});
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 📂 CDN FILE PROXY (/cdn/:file)
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-router.get("/cdn/:file", async (req, res) => {
-  noCache(res);
-  let stream;
-  try {
-    const target = `https://ar-hosting.pages.dev/${req.params.file}`;
-    const response = await axios({ url: target, method: "GET", responseType: "stream", timeout: 30000, headers: { "User-Agent": "RabbitX-CDN" } });
-
-    stream = response.data;
-
-    if (response.headers["content-type"])   res.setHeader("Content-Type",   response.headers["content-type"]);
-    if (response.headers["content-length"]) res.setHeader("Content-Length", response.headers["content-length"]);
-
-    res.setHeader("Accept-Ranges", "bytes");
-    res.setHeader("x-rabbit-cdn",  "RabbitX Edge");
-    res.setHeader("x-cache",       "HIT");
-    res.removeHeader("x-powered-by");
-    noCache(res);
-
-    stream.on("end",   () => safeDestroy(stream));
-    stream.on("close", () => safeDestroy(stream));
-    stream.on("error", () => safeDestroy(stream));
-    req.on("close",    () => safeDestroy(stream));
-    res.on("finish",   () => safeDestroy(stream));
-
-    stream.pipe(res);
-  } catch (e) {
-    safeDestroy(stream);
-    res.status(404).json({ success: false, code: 404, creator: CREATOR, message: "File not found" });
   }
 });
 
