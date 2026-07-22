@@ -52,6 +52,11 @@ router.get("/category/downloader", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "..", "public", "category", "downloader.html"));
 });
 
+router.get("/fullpp", (req, res) => {
+  noCache(res);
+  res.sendFile(path.join(__dirname, "..", "..", "public", "fullpp.html"));
+});
+
 router.get("/removebg", (req, res) => {
   noCache(res);
   res.sendFile(path.join(__dirname, "..", "..", "public", "removebg.html"));
