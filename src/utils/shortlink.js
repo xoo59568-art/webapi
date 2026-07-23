@@ -22,16 +22,42 @@ function extractExtension(url) {
   }
 }
 
+// Strips anything that isn't safe in a URL path segment / filename
+function sanitizeName(name) {
+  return name.replace(/[^a-zA-Z0-9._-]/g, "").replace(/\.{2,}/g, ".");
+}
+
 /**
  * Returns an existing "12hsy.mp4"-style filename for this URL if we've
  * shortened it before, otherwise generates a fresh unique one and stores it.
- * The random part is 5 chars; the extension is copied from the real URL.
+ *
+ * If customName is given, it's used as the base filename instead of a
+ * random one (the real extension is appended if customName doesn't
+ * already include one). Throws if that name is already taken by a
+ * different URL.
  */
-async function getOrCreateFilename(realUrl) {
+async function getOrCreateFilename(realUrl, customName) {
   const existing = await Link.findOne({ url: realUrl }).lean();
-  if (existing) return existing.code;
+  if (existing && !customName) return existing.code;
 
   const ext = extractExtension(realUrl);
+
+  if (customName) {
+    let filename = sanitizeName(customName);
+    if (!filename) throw new Error("Invalid custom name");
+    if (!path.extname(filename)) filename += ext;
+
+    const taken = await Link.findOne({ code: filename }).lean();
+    if (taken) {
+      if (taken.url === realUrl) return filename; // already points to the same file
+      throw new Error(`Name "${filename}" is already taken`);
+    }
+
+    await Link.create({ code: filename, url: realUrl });
+    return filename;
+  }
+
+  // No custom name -> random 5-char code
   let filename;
   let attempts = 0;
 
@@ -47,11 +73,12 @@ async function getOrCreateFilename(realUrl) {
 
 /**
  * Turns any external URL into "https://mydomain.com/12hsy.mp4"
+ * (or "https://mydomain.com/mycustomname.mp4" if customName is given)
  */
-async function shortenLink(req, realUrl) {
+async function shortenLink(req, realUrl, customName) {
   if (!realUrl) return null;
 
-  const filename = await getOrCreateFilename(realUrl);
+  const filename = await getOrCreateFilename(realUrl, customName);
   const base = `${req.protocol}://${req.get("host")}`;
   return `${base}/${filename}`;
 }
