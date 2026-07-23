@@ -42,7 +42,7 @@ router.get("/terabox", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "..", "public", "terabox.html"));
 });
 
-router.get("/upload-page", (req, res) => {
+router.get("/upload", (req, res) => {
   noCache(res);
   res.sendFile(path.join(__dirname, "..", "..", "public", "upload.html"));
 });
