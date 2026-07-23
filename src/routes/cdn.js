@@ -12,10 +12,10 @@ const upload = multer({
 });
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 🐇 THE ONLY UPLOAD ENDPOINT: /upload
-//    - POST /upload  (multipart "file" field)  -> random hosting backend
-//    - GET  /upload?url=...                    -> upload-from-url
-//    - POST /upload  (body: { url })           -> upload-from-url
+// 🐇 THE ONLY UPLOAD ENDPOINT: /api/upload
+//    - POST /api/upload  (multipart "file" field)  -> random hosting backend
+//    - GET  /api/upload?url=...                    -> upload-from-url
+//    - POST /api/upload  (body: { url })           -> upload-from-url
 //    Response never reveals which backend was used. Every link returned
 //    is a short "/xxxxx.ext" URL streamed live by proxy.js — no redirect.
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -68,7 +68,7 @@ async function uploadUrlToArHosting(url) {
   };
 }
 
-router.all("/upload", upload.single("file"), async (req, res) => {
+router.all("/api/upload", upload.single("file"), async (req, res) => {
   noCache(res);
   const url = req.query.url || (req.body && req.body.url);
 
