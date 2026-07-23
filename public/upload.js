@@ -1,0 +1,429 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Infrastructure for text generation, image processing, translation, and machine learning tasks with global edge network performance.">
+    <meta name="theme-color" content="#1a1a1a">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Rabbit CDN.">
+    <meta property="og:description" content="Infrastructure for text generation, image processing, translation, and machine learning tasks with global edge network performance.">
+    <meta property="og:site_name" content="Rabbit CDN.">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Rabbit CDN.">
+    <meta name="twitter:description" content="Infrastructure for text generation, image processing, translation, and machine learning tasks with global edge network performance.">
+    
+    <meta name="author" content="Rabbit CDN.">
+    <meta name="keywords" content="API, endpoints, documentation, Rabbit CDN">
+    
+    <title>Rabbit CDN</title>
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'mono': ['Ubuntu Mono', 'monospace'],
+                        'sans': ['Space Grotesk', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { display: none !important; }
+        body { position: relative; scroll-behavior: smooth; letter-spacing: 0.025em; background-color: #181818; }
+        body::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; min-height: 100vh; z-index: -1;
+            background-image: linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+            background-size: 40px 40px; pointer-events: none;
+        }
+        #sidebar { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        #overlay { transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        #overlay.show { opacity: 1 !important; visibility: visible !important; }
+        @media (max-width: 767px) {
+            #sidebar { transform: translateX(-100%); }
+            #sidebar.open { transform: translateX(0); }
+        }
+        @media (min-width: 768px) {
+            body { padding-left: 16rem; }
+            body > div { padding-left: 0 !important; }
+            #sidebar { transform: translateX(0) !important; }
+            #overlay { display: none !important; }
+            #sidebarToggle { display: none !important; }
+            #sidebarClose { display: none !important; }
+        }
+        .slide-down { animation: slideDown 0.2s ease-out forwards; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .copy-btn { cursor: pointer; transition: color 0.2s; }
+        .copy-btn:hover { color: #ffffff; }
+        .tab-container { position: relative; }
+        .tab-indicator {
+            position: absolute;
+            bottom: 0;
+            height: 1.5px;
+            background-color: #ffffff;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="bg-[#181818] text-gray-200 antialiased font-sans min-h-screen">
+    <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-[#181818] text-gray-200 border-r border-[#2E2E2E] z-[100] overflow-y-auto">
+        <div class="px-8 py-7 flex items-center justify-start md:hidden">
+            <button id="sidebarClose" class="text-white flex items-center justify-center">
+                <i class="material-icons text-2xl">close</i>
+            </button>
+        </div>
+        <div class="px-5 pb-8 pt-0 md:pt-8">
+            <nav>
+                <p class="font-medium text-sm text-gray-300 mb-4 px-4">Get Started</p>
+                <div class="space-y-1">
+                    <a href="#" class="flex items-center justify-between py-1 px-4 text-sm text-gray-400 hover:bg-[#222222] hover:text-white rounded-xl transition-colors">
+                        <span>Dashboard</span>
+                        <i class="material-icons text-lg ml-3">keyboard_arrow_right</i>
+                    </a>
+                </div>
+                <p class="font-medium text-sm text-gray-300 my-4 px-4">Available Endpoints</p>
+                <div class="space-y-1" id="sidebar-dynamic-list">
+                    <a href="#" class="flex items-center justify-between py-1 px-4 text-sm bg-[#222222] text-white rounded-xl transition-colors">
+                        <span>Uploader</span>
+                        <i class="material-icons text-lg ml-3">keyboard_arrow_right</i>
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </aside>
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-80 opacity-0 invisible z-[90] md:hidden"></div>
+    <header id="navbar" class="top-0 z-50">
+        <div class="max-w-2xl mx-auto px-8 py-7 flex items-center justify-between">
+            <div class="flex items-center gap-6">
+                <button id="sidebarToggle" class="text-sm text-white flex items-center justify-center md:hidden">
+                    <i class="material-icons text-2xl">notes</i>
+                </button>
+            </div>
+        </div>
+    </header>
+    <div class="flex flex-col min-h-screen">
+        <main class="max-w-2xl mx-auto px-8 pt-4 pb-8 flex-1 w-full">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex-1 relative">
+                    <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                        <span class="material-icons text-gray-600 text-xl">search</span>
+                    </div>
+                    <input type="text" id="searchInput" placeholder="Search endpoints..." class="w-full pl-12 pr-5 py-3 border border-[#2E2E2E] bg-[#212121] text-gray-600 placeholder-gray-600 focus:outline-none focus:border-[#2E2E2E] rounded-xl">
+                </div>
+            </div>
+            <div id="content">
+                <div id="apiList" class="space-y-4">
+                    <div class="bg-[#212121] border border-[#2E2E2E] api-item overflow-hidden rounded-xl" data-method="post" data-path="/api/upload" data-alias="Rabbit CDN">
+                        <button onclick="toggleEndpoint(0)" class="w-full text-left">
+                            <div class="px-4 py-3.5 flex items-center justify-between gap-3 bg-[#212121]">
+                                <div class="flex items-center min-w-0 flex-1 gap-3">
+                                    <span class="px-2.5 py-1 text-xs font-semibold text-gray-400 bg-[#2a2a2a] border border-[#3a3a3a] rounded-md">POST</span>
+                                    <span class="font-medium truncate text-[0.9rem] text-white">Rabbit CDN</span>
+                                </div>
+                                <div class="flex items-center gap-2 flex-shrink-0">
+                                    <span class="material-icons text-white transition-transform duration-200" id="endpoint-icon-0">expand_more</span>
+                                </div>
+                            </div>
+                            <div class="px-4 pb-3 bg-[#2a2a2a]">
+                                <span class="text-xs text-gray-400 font-mono block pt-2.5">/api/upload</span>
+                            </div>
+                        </button>
+                        <div id="endpoint-0" class="hidden bg-[#1a1a1a] p-5 border-t border-[#2E2E2E]">
+                            <div class="text-white font-bold text-xs mb-2 flex items-center"><span class="material-icons text-sm mr-1">play_arrow</span> TRY IT OUT</div>
+                            <p class="text-xs text-gray-500 mb-4">Upload files to Rabbit CDN</p>
+                            <form id="form-0" onsubmit="executeRequest(event, 0, 'POST', '/api/upload')">
+                                <div class="mb-4 method-content method-post-0">
+                                    <div class="bg-[#212121] border border-[#2E2E2E] p-4 rounded-md">
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span class="material-icons text-white text-sm">tune</span>
+                                            <span class="text-xs font-semibold text-white uppercase">Parameters</span>
+                                        </div>
+                                        <div class="space-y-3">
+                                            <div>
+                                                <label class="block text-xs font-medium text-gray-300 mb-1">
+                                                    file <span class="text-red-400">*</span>
+                                                </label>
+                                                <input type="file" id="fileInput" name="file" class="w-full px-3 py-2 border border-[#2E2E2E] text-sm focus:outline-none focus:border-[#444444] bg-[#1a1a1a] rounded-md text-white font-mono" required="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center gap-2">
+                                    <button type="submit" id="btn-0" class="flex-1 flex items-center justify-center gap-2 bg-[#212121] hover:bg-[#262626] border border-[#2E2E2E] font-semibold text-white py-2 text-xs rounded-md transition-colors">
+                                        <i class="material-icons align-middle text-sm">play_arrow</i> Execute
+                                    </button>
+                                    <button type="button" id="clear-0" onclick="clearRes(0)" class="hidden bg-[#212121] hover:bg-[#262626] border border-[#2E2E2E] font-semibold text-white px-4 py-2 text-xs transition-colors ml-2 rounded-md" title="Clear">
+                                        <i class="material-icons align-middle text-sm">clear</i>
+                                    </button>
+                                    <button type="button" id="copy-link-btn-0" onclick="copyEndpointLink(0, '/api/upload')" class="flex items-center justify-center bg-[#212121] hover:bg-[#262626] border border-[#2E2E2E] font-semibold text-white px-4 py-2 text-xs transition-colors ml-2 rounded-md" title="Link">
+                                        <i id="copy-link-icon-0" class="material-icons align-middle text-sm">link</i>
+                                    </button>
+                                </div>
+                            </form>
+                            <div id="result-0" class="hidden mt-4">
+                                <div id="result-wrapper-0" class="slide-down"></div>
+                            </div>
+                            <div class="mt-6 border-t border-gray-600 pt-4">
+                                <div class="text-white font-bold text-xs mb-2 flex items-center">
+                                    <span class="material-icons text-sm mr-1">list</span> HTTP STATUS CODES
+                                </div>
+                                <div class="bg-[#1a1a1a] border border-[#2E2E2E] overflow-hidden rounded">
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-xs">
+                                            <thead class="bg-[#1a1a1a] border-b border-[#2E2E2E]">
+                                                <tr><th class="px-4 py-2 text-left font-semibold text-white">Code</th><th class="px-4 py-2 text-left font-semibold text-white">Description</th></tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-[#2E2E2E]">
+                                                <tr class="hover:bg-[#232323]"><td class="px-4 py-2"><div class="flex items-center"><span class="material-icons text-green-400 text-sm mr-2">check_circle</span><span class="font-mono font-semibold text-green-400">200</span></div></td><td class="px-4 py-2 text-white">OK - Request successful</td></tr>
+                                                <tr class="hover:bg-[#232323]"><td class="px-4 py-2"><div class="flex items-center"><span class="material-icons text-red-400 text-sm mr-2">error</span><span class="font-mono font-semibold text-red-400">400</span></div></td><td class="px-4 py-2 text-white">Bad Request - Invalid or missing file</td></tr>
+                                                <tr class="hover:bg-[#232323]"><td class="px-4 py-2"><div class="flex items-center"><span class="material-icons text-red-400 text-sm mr-2">error</span><span class="font-mono font-semibold text-red-400">500</span></div></td><td class="px-4 py-2 text-white">Internal Server Error - Upload process failed</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer class="bg-[#212121] relative z-10 border-t border-[#2E2E2E] w-full">
+            <div class="max-w-2xl mx-auto px-8 py-12">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <h3 class="font-semibold text-white mb-3">About</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            Rabbit CDN providing fast and reliable file delivery networks with modern secure storage pipelines.
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-white mb-3">Connect</h3>
+                        <div class="flex gap-3">
+                            <a href="https://wa.me/917439382677" target="_blank" class="w-9 h-9 flex items-center justify-center rounded-lg bg-[#1a1a1a] hover:bg-[#2a2a2a] text-gray-600 hover:text-white transition-all">
+                                <i class="fab fa-whatsapp text-lg"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="pt-8 border-t border-[#2E2E2E] text-center">
+                    <p class="text-sm text-gray-400">
+                        © 2026 Rabbit CDN, All rights reserved.
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script>
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebarClose = document.getElementById('sidebarClose');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('show'); document.body.classList.add('overflow-hidden'); }
+    function closeSidebar() { if(window.innerWidth < 768) { sidebar.classList.remove('open'); overlay.classList.remove('show'); document.body.classList.remove('overflow-hidden'); } }
+    
+    sidebarToggle.addEventListener('click', openSidebar);
+    sidebarClose.addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
+
+    const TabManager = {
+        activeTab: {},
+        switch: (id, type) => {
+            const curlBox = document.getElementById(`curl-display-${id}`);
+            const nodeBox = document.getElementById(`node-display-${id}`);
+            const curlBtn = document.getElementById(`tab-curl-${id}`);
+            const nodeBtn = document.getElementById(`tab-node-${id}`);
+            const indicator = document.getElementById(`tab-indicator-${id}`);
+
+            if (curlBox) curlBox.classList.add('hidden');
+            if (nodeBox) nodeBox.classList.add('hidden');
+            if (curlBtn) curlBtn.classList.replace('text-white', 'text-gray-400');
+            if (nodeBtn) nodeBtn.classList.replace('text-white', 'text-gray-400');
+
+            if (type === 'curl' && curlBox && curlBtn) {
+                curlBox.classList.remove('hidden');
+                curlBtn.classList.replace('text-gray-400', 'text-white');
+                indicator.style.left = '0px';
+                indicator.style.width = '60px';
+                TabManager.activeTab[id] = 'curl';
+            } else if (type === 'node' && nodeBox && nodeBtn) {
+                nodeBox.classList.remove('hidden');
+                nodeBtn.classList.replace('text-gray-400', 'text-white');
+                indicator.style.left = '60px';
+                indicator.style.width = '80px';
+                TabManager.activeTab[id] = 'node';
+            }
+        }
+    };
+
+    async function copyToClipboard(elementId, btnElement) {
+        try {
+            const textElement = document.getElementById(elementId);
+            const textToCopy = textElement.textContent || textElement.innerText;
+            await navigator.clipboard.writeText(textToCopy);
+            const originalHTML = btnElement.innerHTML;
+            btnElement.innerHTML = '<span class="material-icons text-sm align-middle text-white">check</span>';
+            setTimeout(() => { btnElement.innerHTML = originalHTML; }, 1500);
+        } catch (err) { console.error(err); }
+    }
+
+    window.copyActiveCode = (id) => {
+        const active = TabManager.activeTab[id] || 'curl';
+        let targetId = `curl-content-${id}`;
+        if(active === 'node') targetId = `node-content-${id}`;
+        const btn = document.getElementById(`copy-code-btn-${id}`);
+        copyToClipboard(targetId, btn);
+    };
+
+    async function copyEndpointLink(id, path) {
+        const fullUrl = window.location.origin + path;
+        try {
+            await navigator.clipboard.writeText(fullUrl);
+            const icon = document.getElementById(`copy-link-icon-${id}`);
+            icon.innerText = 'check';
+            setTimeout(() => { icon.innerText = 'link'; }, 1500);
+        } catch (err) { console.error(err); }
+    }
+
+    window.toggleEndpoint = (id) => {
+        const content = document.getElementById(`endpoint-${id}`);
+        const icon = document.getElementById(`endpoint-icon-${id}`);
+        if (content.classList.contains('hidden')) {
+            content.classList.remove('hidden'); icon.innerText = 'expand_less';
+        } else {
+            content.classList.add('hidden'); icon.innerText = 'expand_more';
+        }
+    };
+
+    window.clearRes = (id) => {
+        const resultWrapper = document.getElementById(`result-wrapper-${id}`);
+        const resultContainer = document.getElementById(`result-${id}`);
+        const clearBtn = document.getElementById(`clear-${id}`);
+        resultWrapper.innerHTML = ''; 
+        resultContainer.classList.add('hidden');
+        clearBtn.classList.add('hidden');
+    };
+
+    window.executeRequest = async (e, id, method, path) => {
+        e.preventDefault();
+        const resultDiv = document.getElementById(`result-${id}`);
+        const resultWrapper = document.getElementById(`result-wrapper-${id}`);
+        const clearBtn = document.getElementById(`clear-${id}`);
+        resultDiv.classList.remove('hidden');
+        
+        const fileInput = document.getElementById("fileInput");
+        const file = fileInput.files[0];
+        if (!file) {
+            resultWrapper.innerHTML = `<span class="text-red-400 text-xs font-mono">Please select a file first.</span>`;
+            return;
+        }
+
+        const absoluteUrl = window.location.origin + path;
+
+        let curlCommand = `curl -X POST "${absoluteUrl}" \\\n  -F "file=@${file.name}"`;
+        let nodeCode = `import axios from 'axios';\nimport FormData from 'form-data';\nimport fs from 'fs';\n\nconst uploadData = async () => {\n  try {\n    const form = new FormData();\n    form.append('file', fs.createReadStream('${file.name}'));\n    const response = await axios.post('${absoluteUrl}', form, {\n      headers: { ...form.getHeaders() }\n    });\n    return response.data;\n  } catch (error) {\n    return error.message;\n  }\n}\nuploadData().then(console.log);`;
+
+        resultWrapper.innerHTML = `
+        <div class="space-y-6">
+            <div class="tab-container border-b border-[#2E2E2E]">
+                <div class="flex relative">
+                    <button type="button" id="tab-curl-${id}" onclick="TabManager.switch(${id}, 'curl')" class="px-4 py-2 text-xs font-medium text-white transition-colors" style="width: 60px;">cURL</button>
+                    <button type="button" id="tab-node-${id}" onclick="TabManager.switch(${id}, 'node')" class="px-4 py-2 text-xs font-medium text-gray-400 hover:text-gray-200 transition-colors" style="width: 80px;">Node.js</button>
+                    <div class="tab-indicator" id="tab-indicator-${id}" style="left: 0px; width: 60px;"></div>
+                </div>
+            </div>
+            <div id="code-section-${id}">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="material-icons text-white text-sm">terminal</span>
+                        <span class="text-xs font-semibold text-white uppercase tracking-wide">Command</span>
+                    </div>
+                    <button type="button" id="copy-code-btn-${id}" onclick="copyActiveCode(${id})" class="text-gray-500 hover:text-white transition-colors">
+                        <span class="material-icons text-sm">content_copy</span>
+                    </button>
+                </div>
+                <div id="curl-display-${id}" class="bg-[#1a1a1a] border border-[#2E2E2E] rounded-md overflow-hidden">
+                    <div class="p-4"><pre class="text-white overflow-auto font-mono text-xs"><code id="curl-content-${id}">${curlCommand}</code></pre></div>
+                </div>
+                <div id="node-display-${id}" class="bg-[#1a1a1a] border border-[#2E2E2E] rounded-md overflow-hidden hidden">
+                    <div class="p-4"><pre class="text-white overflow-auto font-mono text-xs"><code id="node-content-${id}">${nodeCode}</code></pre></div>
+                </div>
+            </div>
+            <div id="response-section-${id}">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="material-icons text-white text-sm">check_circle</span>
+                        <span class="text-xs font-semibold text-white uppercase tracking-wide">Response</span>
+                    </div>
+                </div>
+                <div class="bg-[#1a1a1a] border border-[#2E2E2E] rounded-md overflow-hidden">
+                    <div class="px-4 py-2 bg-[#1a1a1a] border-b border-[#2E2E2E] flex justify-between items-center">
+                        <span class="text-[10px] text-gray-500 uppercase font-bold">Output</span>
+                        <button type="button" id="copy-res-btn-${id}" onclick="copyToClipboard('response-content-${id}', this)" class="text-gray-500 hover:text-white transition-colors">
+                            <span class="material-icons text-xs">content_copy</span>
+                        </button>
+                    </div>
+                    <div class="p-4" id="response-body-wrapper-${id}">
+                        <div class="flex items-center gap-2 text-white text-xs">
+                            <span class="material-icons text-sm animate-spin">refresh</span> Uploading & Processing...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+        try {
+            const data = new FormData();
+            data.append("file", file);
+
+            const res = await fetch(path, {
+                method: 'POST',
+                body: data
+            });
+            const json = await res.json();
+            const wrapper = document.getElementById(`response-body-wrapper-${id}`);
+
+            if (json.url || json.status || json.success) {
+                let preview = "";
+                const targetUrl = json.url || (json.result && json.result.url);
+                
+                if (file.type.startsWith("image/")) {
+                    preview = `<div class="mt-4 flex justify-center"><img src="${targetUrl}" class="max-w-full h-auto rounded-md border border-[#2E2E2E]"></div>`;
+                } else if (file.type.startsWith("video/")) {
+                    preview = `<div class="mt-4"><video controls class="w-full rounded-md border border-[#2E2E2E]"><source src="${targetUrl}"></video></div>`;
+                } else if (file.type.startsWith("audio/")) {
+                    preview = `<div class="mt-4"><audio controls class="w-full"><source src="${targetUrl}"></audio></div>`;
+                }
+
+                wrapper.innerHTML = `
+                    <pre class="max-h-80 overflow-auto m-0 font-mono text-xs"><code class="language-json text-white" id="response-content-${id}">${JSON.stringify(json, null, 2)}</code></pre>
+                    <div class="mt-4 pt-4 border-t border-[#2E2E2E] text-xs">
+                        <span class="text-green-400 font-bold">✓ Upload successful</span><br>
+                        <span class="text-gray-400">CDN Access Link:</span> 
+                        <a href="${targetUrl}" target="_blank" class="text-blue-400 hover:underline block break-all font-mono mt-1">${targetUrl}</a>
+                    </div>
+                    ${preview}
+                `;
+                if (window.hljs) hljs.highlightElement(wrapper.querySelector('code'));
+            } else {
+                wrapper.innerHTML = `<span class="text-red-400 text-xs font-mono" id="response-content-${id}">Upload failed: API responded without a valid URL structure.</span>`;
+            }
+            clearBtn.classList.remove('hidden');
+        } catch (err) {
+            const wrap = document.getElementById(`response-body-wrapper-${id}`);
+            if(wrap) wrap.innerHTML = `<span class="text-red-400 text-xs font-mono" id="response-content-${id}">Error: ${err.message}</span>`;
+            clearBtn.classList.remove('hidden');
+        }
+    };
+    </script>
+</body></html>
